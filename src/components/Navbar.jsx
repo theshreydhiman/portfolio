@@ -18,17 +18,7 @@ export default function Navbar({ activePage, onPageChange }) {
                     SD<span>.</span>
                 </div>
                 <div className="nav-links">
-                    {PAGES.map(p => (
-                        <a
-                            key={p}
-                            href="#"
-                            className={activePage === p ? 'active' : ''}
-                            data-page={p}
-                            onClick={e => { e.preventDefault(); onPageChange(p) }}
-                        >
-                            {p.charAt(0).toUpperCase() + p.slice(1)}
-                        </a>
-                    ))}
+                    <span className="nav-quip">Too busy solving actual world problems that I had to vibe code this portfolio</span>
                 </div>
                 <a className="nav-cta mag" href="https://drive.google.com/uc?export=download&id=1oLrHQ1GszIwR1MfkJ6cgR6XfLWaq8tNC" target="_blank" rel="noopener noreferrer"><span>Download CV</span></a>
                 <button

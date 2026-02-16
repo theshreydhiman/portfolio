@@ -15,6 +15,8 @@ export default function CustomCursor() {
         const pulseEl = pulseRef.current
         if (!cur || !ringEl || !pulseEl) return
 
+        gsap.set([cur, ringEl, pulseEl], { xPercent: -50, yPercent: -50 })
+
         const onMouseMove = (e) => {
             mouse.current.x = e.clientX
             mouse.current.y = e.clientY
@@ -43,45 +45,19 @@ export default function CustomCursor() {
             ringEl.classList.remove('big')
         }
 
-        const enterBatMode = () => {
-            cur.classList.remove('big')
-            ringEl.classList.remove('big')
-            cur.classList.add('bat-mode')
-            ringEl.classList.add('bat-mode')
-            pulseEl.classList.add('active')
-            gsap.fromTo(cur, { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(2)' })
-            gsap.fromTo(cur, { rotation: -180 }, { rotation: 0, duration: 0.5, ease: 'back.out(1.5)' })
-        }
-        const exitBatMode = () => {
-            cur.classList.remove('bat-mode')
-            ringEl.classList.remove('bat-mode')
-            pulseEl.classList.remove('active')
-            gsap.fromTo(cur, { scale: 1.2 }, { scale: 1, duration: 0.35, ease: 'back.out(2)' })
-        }
-
         // Hover for clickable elements
         const clickableSel = 'a,button,.btn-gold,.btn-ghost,.nav-cta,.tab,.chip,.proj-card,.ach-card,.tilt,.mag'
 
         const onMouseEnterDelegate = (e) => {
             if (e.target.matches && e.target.matches(clickableSel)) onEnterClickable()
-            if (e.target.matches && e.target.matches('input, textarea, select')) enterBatMode()
         }
         const onMouseLeaveDelegate = (e) => {
             if (e.target.matches && e.target.matches(clickableSel)) onLeaveClickable()
-            if (e.target.matches && e.target.matches('input, textarea, select')) exitBatMode()
-        }
-        const onFocusDelegate = (e) => {
-            if (e.target.matches && e.target.matches('input, textarea, select')) enterBatMode()
-        }
-        const onBlurDelegate = (e) => {
-            if (e.target.matches && e.target.matches('input, textarea, select')) exitBatMode()
         }
 
         document.addEventListener('mousemove', onMouseMove)
         document.addEventListener('mouseenter', onMouseEnterDelegate, true)
         document.addEventListener('mouseleave', onMouseLeaveDelegate, true)
-        document.addEventListener('focus', onFocusDelegate, true)
-        document.addEventListener('blur', onBlurDelegate, true)
 
         rafId = requestAnimationFrame(trailLoop)
 
@@ -89,8 +65,6 @@ export default function CustomCursor() {
             document.removeEventListener('mousemove', onMouseMove)
             document.removeEventListener('mouseenter', onMouseEnterDelegate, true)
             document.removeEventListener('mouseleave', onMouseLeaveDelegate, true)
-            document.removeEventListener('focus', onFocusDelegate, true)
-            document.removeEventListener('blur', onBlurDelegate, true)
             cancelAnimationFrame(rafId)
         }
     }, [])
