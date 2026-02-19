@@ -3,7 +3,10 @@ const PAGES = ['home', 'about', 'experience', 'projects', 'contact']
 export default function Navbar({ activePage, onPageChange }) {
     return (
         <nav id="nav">
-            <div className="nav-logo">SD<span>.</span></div>
+            <div className="nav-logo">
+                <img src="/bat-logo.png" className="nav-bat-logo" alt="" />
+                SD<span>.</span>
+            </div>
             <div className="nav-links">
                 {PAGES.map(p => (
                     <a
