@@ -118,6 +118,21 @@ export default function ProjectsSection() {
                             </div>
                         </div>
                     ))}
+                    <div className="proj-card proj-card--loading gsap-reveal" data-num="03">
+                        <div className="proj-tag">↳ Classified</div>
+                        <h3 className="proj-loading-title">Next Case File</h3>
+                        <div className="proj-loading-bars">
+                            <div className="plb"></div>
+                            <div className="plb plb--short"></div>
+                            <div className="plb plb--med"></div>
+                        </div>
+                        <div className="proj-loading-status">
+                            <span className="proj-loading-dot"></span>
+                            <span className="proj-loading-dot"></span>
+                            <span className="proj-loading-dot"></span>
+                            <span className="proj-loading-label">Decrypting</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="gold-line" style={{ margin: '60px 0' }}></div>
