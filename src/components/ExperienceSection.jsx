@@ -40,11 +40,21 @@ export default function ExperienceSection() {
         const root = sectionRef.current
         if (!root) return
 
-        const reveals = root.querySelectorAll('.gsap-reveal')
-        gsap.set(reveals, { opacity: 0, y: 36 })
+        const allReveals = root.querySelectorAll('.gsap-reveal')
+        gsap.set(allReveals, { opacity: 0, y: 36 })
 
+        // Header elements are above the fold at page load — animate directly (no ScrollTrigger)
+        const topEls = [
+            root.querySelector('.section-eyebrow'),
+            root.querySelector('.section-title-big'),
+            root.querySelector('.section-sub'),
+        ].filter(Boolean)
+        gsap.to(topEls, { opacity: 1, y: 0, duration: 0.75, ease: 'power2.out', stagger: 0.12, delay: 0.1 })
+
+        // Below-fold elements — reveal on scroll
+        const scrollEls = [...allReveals].filter(el => !topEls.includes(el))
         const triggers = []
-        reveals.forEach((el, i) => {
+        scrollEls.forEach((el, i) => {
             const anim = gsap.to(el, {
                 opacity: 1, y: 0, duration: 0.75, delay: i * 0.1, ease: 'power2.out',
                 scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
