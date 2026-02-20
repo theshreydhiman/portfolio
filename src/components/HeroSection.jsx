@@ -66,8 +66,11 @@ export default function HeroSection({ onViewWork }) {
     const bootHero = useCallback(() => {
         const tl = gsap.timeline()
 
-        tl.to('.nav-logo', { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }, 0.1)
-        tl.to('#tabBar', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.2)
+        // Only animate nav chrome on first load (not on revisit)
+        if (gsap.getProperty('.nav-logo', 'opacity') < 1) {
+            tl.to('.nav-logo', { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }, 0.1)
+            tl.to('#tabBar', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.2)
+        }
 
         tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.3)
         tl.to('.hero-name', { opacity: 1, y: 0, duration: 0.7, ease: 'back.out(1.4)' }, 0.5)

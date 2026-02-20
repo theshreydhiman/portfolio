@@ -77,6 +77,14 @@ export default function App() {
         })
     }, [handlePageChange])
 
+    // Keep nav chrome visible when navigating away from home
+    useEffect(() => {
+        if (activePage !== 'home') {
+            gsap.set('.nav-logo', { opacity: 1, x: 0 })
+            gsap.set('#tabBar', { opacity: 1, y: 0 })
+        }
+    }, [activePage])
+
     // After activePage updates: slide new page in (swipe) or just reset (tab click)
     useEffect(() => {
         const el = pageWrapRef.current
