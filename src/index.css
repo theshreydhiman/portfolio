@@ -8,7 +8,7 @@
   --gold:#c9a84c;--gold-l:#e8c96a;--gold-dim:rgba(201,168,76,.12);
   --border:#1a1a28;--text:#9090a8;--white:#e8e8f2;
 }
-html{scroll-behavior:smooth;}
+html{scroll-behavior:smooth;overflow-x:hidden;}
 body{
   background:var(--black);color:var(--text);
   font-family:'Crimson Text',Georgia,serif;font-size:15px;
@@ -209,6 +209,9 @@ nav.scrolled{border-bottom-color:var(--border);}
 /* ── PAGE SYSTEM ── */
 .page{display:none;}
 .page.active{display:block;}
+
+/* ── SWIPE TRANSITION WRAPPER ── */
+.page-transition-wrapper{position:relative;will-change:transform;}
 
 /* ── SECTION ── */
 .section{padding:80px 60px;max-width:1100px;margin:0 auto;}
