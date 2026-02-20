@@ -13,6 +13,7 @@ body{
   background:var(--black);color:var(--text);
   font-family:'Crimson Text',Georgia,serif;font-size:15px;
   line-height:1.6;overflow-x:hidden;cursor:none;
+  padding-top:64px;
 }
 
 /* ── NOISE ── */
@@ -575,7 +576,6 @@ footer .fr{font-style:italic;font-size:12px;color:#484850;}
    MOBILE RESPONSIVE
 ═══════════════════════════ */
 @media (max-width: 768px) {
-  #three-canvas { display: none !important; }
   #cursor, #cursor-trail, #cursor-bat-pulse { display: none !important; }
   * { cursor: auto !important; }
   input, textarea, select { cursor: text !important; caret-color: var(--gold); }
