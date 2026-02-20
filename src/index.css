@@ -496,6 +496,81 @@ footer .fr{font-style:italic;font-size:12px;color:#484850;}
 /* ── SCROLL SECTION REVEAL ── */
 .gsap-reveal{opacity:0;transform:translateY(32px);}
 
+/* ── HAMBURGER MENU ── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px; height: 36px;
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 8px;
+  cursor: none;
+  transition: border-color .3s;
+  flex-shrink: 0;
+}
+.nav-hamburger:hover { border-color: rgba(201,168,76,.4); }
+.nav-hamburger span {
+  display: block;
+  height: 1px;
+  background: var(--gold);
+  transition: transform .3s, opacity .3s, width .3s;
+  transform-origin: center;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.nav-mobile-menu {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 0; right: 0;
+  background: rgba(5,5,7,.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 999;
+  padding: 16px 20px 20px;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-mobile-menu.open { display: flex; }
+.nav-mobile-menu a {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #666;
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 13px 8px;
+  border-bottom: 1px solid #0e0e18;
+  transition: color .3s;
+  cursor: none;
+}
+.nav-mobile-menu a:last-child { border-bottom: none; }
+.nav-mobile-menu a:hover,
+.nav-mobile-menu a.active { color: var(--gold); }
+
+/* ═══════════════════════════
+   TABLET RESPONSIVE
+═══════════════════════════ */
+@media (max-width: 1024px) {
+  nav { padding: 0 32px; }
+  .tab-bar { padding: 0 32px; }
+  .section { padding: 64px 32px; }
+  .hero-content {
+    padding: 64px 32px 48px;
+    grid-template-columns: 1fr 220px;
+    gap: 40px;
+  }
+  .section-title-big { font-size: 32px; }
+  .about-grid { gap: 40px; }
+  .contact-grid { gap: 40px; }
+  footer { padding: 22px 32px; }
+  .proj-card { padding: 28px; }
+}
+
 /* ═══════════════════════════
    MOBILE RESPONSIVE
 ═══════════════════════════ */
@@ -507,31 +582,51 @@ footer .fr{font-style:italic;font-size:12px;color:#484850;}
 
   nav { padding: 0 20px; }
   .nav-links { display: none; }
-  .nav-cta { font-size: 9px; padding: 7px 14px; }
+  .nav-cta { display: none; }
+  .nav-hamburger { display: flex; }
 
   .tab-bar { padding: 0 8px; overflow-x: auto; overflow-y: hidden; gap: 0; }
   .tab-bar::-webkit-scrollbar { display: none; }
-  .tab { padding: 12px 14px; font-size: 9px; letter-spacing: 1px; white-space: nowrap; }
+  .tab { padding: 12px 14px; font-size: 9px; letter-spacing: 1px; white-space: nowrap; cursor: auto; }
 
   .section { padding: 48px 20px; }
-  .section-title-big { font-size: 26px; }
+  .section-title-big { font-size: clamp(22px, 7vw, 30px); }
 
   .hero-content {
     grid-template-columns: 1fr;
     padding: 72px 20px 48px;
     gap: 32px;
   }
-  .hero-name { font-size: 52px; }
+  .hero-name { font-size: clamp(38px, 13vw, 56px); }
+  .hero-btns { flex-wrap: wrap; }
   .hero-card { width: 100%; position: static; }
   .hero-stats { gap: 20px; flex-wrap: wrap; }
   .stat-val { font-size: 24px; }
 
   .about-grid { grid-template-columns: 1fr; gap: 36px; }
   .proj-grid { grid-template-columns: 1fr; }
+  .proj-card { padding: 24px; }
   .ach-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; gap: 36px; }
   .exp-role { font-size: 18px; }
 
   footer { flex-direction: column; gap: 8px; text-align: center; padding: 20px; }
   footer .fr { display: none; }
+}
+
+/* ═══════════════════════════
+   EXTRA SMALL SCREENS
+═══════════════════════════ */
+@media (max-width: 480px) {
+  .section { padding: 40px 16px; }
+  .hero-content { padding: 64px 16px 40px; }
+  .hero-name { font-size: clamp(34px, 14vw, 48px); }
+  .hero-sub { font-size: 10px; letter-spacing: 2px; }
+  .hero-btns { gap: 10px; }
+  .btn-gold, .btn-ghost { padding: 11px 20px; font-size: 10px; }
+  .hero-stats { gap: 16px; }
+  .stat-val { font-size: 22px; }
+  .section-title-big { font-size: clamp(20px, 6vw, 26px); }
+  .ach-card { padding: 18px; }
+  footer { padding: 16px; }
 }
