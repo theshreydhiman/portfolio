@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -31,127 +31,164 @@ export default function App() {
     const [loaderDone, setLoaderDone] = useState(false)
     const [threeReveal, setThreeReveal] = useState(false)
 
-    // Refs for animation state (avoid stale closures in touch handlers)
-    const activePageRef = useRef('home')
-    const pageWrapperRef = useRef(null)
-    const isAnimatingRef = useRef(false)
-    const pendingEnterXRef = useRef(null) // enterX offset to animate from after state change
-    const touchStartRef = useRef(null)
+    // Swipe state
+    const pageWrapRef = useRef(null)
+    const isAnimating = useRef(false)
+    const pendingDir = useRef(null) // 'left' | 'right' — set before page change, consumed after
 
     const handleLoaderComplete = useCallback(() => {
         setLoaderDone(true)
         setThreeReveal(true)
     }, [])
 
-    /**
-     * Core slide transition.
-     * direction: 'left'  → current page exits left,  next page enters from right
-     * direction: 'right' → current page exits right, next page enters from left
-     */
-    const navigateWithSlide = useCallback((page, direction) => {
-        if (isAnimatingRef.current || page === activePageRef.current) return
-        isAnimatingRef.current = true
-
-        const wrapper = pageWrapperRef.current
-        const exitX  = direction === 'left' ? '-100%' : '100%'
-        const enterX = direction === 'left' ?  '100%' : '-100%'
-
-        const commitChange = () => {
-            ScrollTrigger.getAll().forEach(st => st.kill())
-            // Position wrapper off-screen on the entering side BEFORE react re-renders
-            if (wrapper) gsap.set(wrapper, { x: enterX })
-            pendingEnterXRef.current = enterX
-            activePageRef.current = page
-            setActivePage(page)
-            window.scrollTo({ top: 0 })
-        }
-
-        if (!wrapper) {
-            commitChange()
-            isAnimatingRef.current = false
-            return
-        }
-
-        gsap.to(wrapper, {
-            x: exitX,
-            duration: 0.32,
-            ease: 'power2.in',
-            onComplete: commitChange,
-        })
+    // Regular (non-swipe) page change — tab bar, menu, buttons
+    const handlePageChange = useCallback((page) => {
+        ScrollTrigger.getAll().forEach(st => st.kill())
+        isAnimating.current = false
+        pendingDir.current = null
+        setActivePage(page)
+        window.scrollTo({ top: 0 })
     }, [])
 
-    /**
-     * After React commits the new page component, slide it in from enterX → 0.
-     * useLayoutEffect fires before the browser paints, preventing any visible flash.
-     */
-    useLayoutEffect(() => {
-        if (pendingEnterXRef.current === null) return
-        pendingEnterXRef.current = null
+    // Swipe-initiated page change: slide current page out, then change
+    const swipeTo = useCallback((newPage, direction) => {
+        if (isAnimating.current) return
+        isAnimating.current = true
+        pendingDir.current = direction
 
-        const wrapper = pageWrapperRef.current
-        if (!wrapper) {
-            isAnimatingRef.current = false
+        const el = pageWrapRef.current
+        if (!el) {
+            handlePageChange(newPage)
+            isAnimating.current = false
             return
         }
 
-        gsap.to(wrapper, {
-            x: 0,
-            duration: 0.36,
-            ease: 'power2.out',
-            onComplete: () => { isAnimatingRef.current = false },
+        ScrollTrigger.getAll().forEach(st => st.kill())
+
+        gsap.to(el, {
+            x: direction === 'left' ? '-100vw' : '100vw',
+            opacity: 0,
+            duration: 0.3,
+            ease: 'power2.in',
+            onComplete: () => {
+                setActivePage(newPage)
+                window.scrollTo({ top: 0 })
+            },
         })
+    }, [handlePageChange])
+
+    // After activePage updates: slide new page in (swipe) or just reset (tab click)
+    useEffect(() => {
+        const el = pageWrapRef.current
+        if (!el) return
+
+        if (!pendingDir.current) {
+            // Non-swipe navigation — reset wrapper cleanly
+            gsap.set(el, { x: 0, opacity: 1 })
+            return
+        }
+
+        const dir = pendingDir.current
+        pendingDir.current = null
+
+        gsap.fromTo(
+            el,
+            { x: dir === 'left' ? '100vw' : '-100vw', opacity: 0 },
+            {
+                x: 0, opacity: 1,
+                duration: 0.38,
+                ease: 'power2.out',
+                onComplete: () => { isAnimating.current = false },
+            }
+        )
     }, [activePage])
 
-    /**
-     * Public page-change handler (used by Navbar & TabBar).
-     * Determines slide direction from tab order automatically.
-     */
-    const handlePageChange = useCallback((page) => {
-        if (isAnimatingRef.current || page === activePageRef.current) return
-        const curIdx = PAGES.indexOf(activePageRef.current)
-        const nxtIdx = PAGES.indexOf(page)
-        navigateWithSlide(page, nxtIdx > curIdx ? 'left' : 'right')
-    }, [navigateWithSlide])
-
-    /**
-     * Touch swipe detection (mobile only).
-     * • Swipe left  → next page
-     * • Swipe right → previous page
-     * Only fires when horizontal delta dominates vertical (avoids false triggers on scroll).
-     */
+    // Touch swipe detection with live drag-follow
     useEffect(() => {
+        let startX = 0
+        let startY = 0
+        let startTime = 0
+        let blocked = false
+        let dragging = false
+
         const onTouchStart = (e) => {
-            if (isAnimatingRef.current) return
-            touchStartRef.current = {
-                x: e.touches[0].clientX,
-                y: e.touches[0].clientY,
+            // Ignore touches on form elements or the tab bar
+            const tag = e.target.tagName.toLowerCase()
+            if (['input', 'textarea', 'select', 'button'].includes(tag)) { blocked = true; return }
+            if (e.target.closest('#tabBar')) { blocked = true; return }
+
+            blocked = false
+            dragging = false
+            startX = e.touches[0].clientX
+            startY = e.touches[0].clientY
+            startTime = Date.now()
+
+            // Kill any in-progress swipe animation so the user can re-grab
+            if (pageWrapRef.current) gsap.killTweensOf(pageWrapRef.current)
+        }
+
+        const onTouchMove = (e) => {
+            if (blocked || isAnimating.current) return
+            const dx = e.touches[0].clientX - startX
+            const dy = e.touches[0].clientY - startY
+
+            if (!dragging) {
+                if (Math.abs(dx) < 12) return             // wait for intent
+                if (Math.abs(dy) > Math.abs(dx)) { blocked = true; return } // vertical scroll
+                dragging = true
             }
+
+            const idx = PAGES.indexOf(activePage)
+            const canGoLeft  = dx < 0 && idx < PAGES.length - 1
+            const canGoRight = dx > 0 && idx > 0
+            if (!canGoLeft && !canGoRight) return
+
+            // Dampened drag-follow (page lightly tracks the finger)
+            const drag = dx * 0.3
+            const fade = 1 - Math.abs(dx) / (window.innerWidth * 1.6)
+            gsap.set(pageWrapRef.current, { x: drag, opacity: Math.max(0.4, fade) })
         }
 
         const onTouchEnd = (e) => {
-            if (!touchStartRef.current || isAnimatingRef.current) return
-            const dx = e.changedTouches[0].clientX - touchStartRef.current.x
-            const dy = e.changedTouches[0].clientY - touchStartRef.current.y
-            touchStartRef.current = null
+            if (blocked) return
 
-            // Minimum 60 px horizontal travel AND horizontal > 1.5× vertical
-            if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return
+            const dx = e.changedTouches[0].clientX - startX
+            const dy = e.changedTouches[0].clientY - startY
+            const dt = Date.now() - startTime
 
-            const curIdx = PAGES.indexOf(activePageRef.current)
-            const dir    = dx < 0 ? 'left' : 'right'
-            const nxtIdx = dir === 'left' ? curIdx + 1 : curIdx - 1
+            const isSwipe = Math.abs(dx) >= 55
+                         && Math.abs(dy) <= Math.abs(dx) * 0.8
+                         && dt <= 650
 
-            if (nxtIdx < 0 || nxtIdx >= PAGES.length) return
-            navigateWithSlide(PAGES[nxtIdx], dir)
+            const idx = PAGES.indexOf(activePage)
+
+            if (!isAnimating.current && isSwipe) {
+                if (dx < 0 && idx < PAGES.length - 1) {
+                    swipeTo(PAGES[idx + 1], 'left')
+                } else if (dx > 0 && idx > 0) {
+                    swipeTo(PAGES[idx - 1], 'right')
+                } else if (dragging) {
+                    // Edge of page list — spring back
+                    gsap.to(pageWrapRef.current, { x: 0, opacity: 1, duration: 0.45, ease: 'back.out(2)' })
+                }
+            } else if (dragging) {
+                // Didn't reach threshold — spring back
+                gsap.to(pageWrapRef.current, { x: 0, opacity: 1, duration: 0.45, ease: 'back.out(2)' })
+            }
+
+            dragging = false
         }
 
         document.addEventListener('touchstart', onTouchStart, { passive: true })
+        document.addEventListener('touchmove',  onTouchMove,  { passive: true })
         document.addEventListener('touchend',   onTouchEnd,   { passive: true })
+
         return () => {
             document.removeEventListener('touchstart', onTouchStart)
+            document.removeEventListener('touchmove',  onTouchMove)
             document.removeEventListener('touchend',   onTouchEnd)
         }
-    }, [navigateWithSlide])
+    }, [activePage, swipeTo])
 
     const ActivePage = PAGE_COMPONENTS[activePage]
 
@@ -163,7 +200,7 @@ export default function App() {
             <ScrollProgress />
             <Navbar activePage={activePage} onPageChange={handlePageChange} />
             <TabBar activePage={activePage} onPageChange={handlePageChange} />
-            <div ref={pageWrapperRef} className="page-transition-wrapper">
+            <div ref={pageWrapRef}>
                 <ActivePage
                     key={activePage}
                     onViewWork={() => handlePageChange('projects')}
