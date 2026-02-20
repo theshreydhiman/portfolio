@@ -7,6 +7,7 @@ import CustomCursor from './components/CustomCursor'
 import ScrollProgress from './components/ScrollProgress'
 import Navbar from './components/Navbar'
 import TabBar from './components/TabBar'
+import SwipeHint from './components/SwipeHint'
 import ThreeScene from './components/ThreeScene'
 import HeroSection from './components/HeroSection'
 import AboutSection from './components/AboutSection'
@@ -30,6 +31,7 @@ export default function App() {
     const [activePage, setActivePage] = useState('home')
     const [loaderDone, setLoaderDone] = useState(false)
     const [threeReveal, setThreeReveal] = useState(false)
+    const [swipeHintDismissed, setSwipeHintDismissed] = useState(false)
 
     // Swipe state
     const pageWrapRef = useRef(null)
@@ -163,6 +165,7 @@ export default function App() {
             const idx = PAGES.indexOf(activePage)
 
             if (!isAnimating.current && isSwipe) {
+                setSwipeHintDismissed(true)
                 if (dx < 0 && idx < PAGES.length - 1) {
                     swipeTo(PAGES[idx + 1], 'left')
                 } else if (dx > 0 && idx > 0) {
@@ -200,6 +203,7 @@ export default function App() {
             <ScrollProgress />
             <Navbar activePage={activePage} onPageChange={handlePageChange} />
             <TabBar activePage={activePage} onPageChange={handlePageChange} />
+            <SwipeHint dismissed={swipeHintDismissed} loaderDone={loaderDone} />
             <div ref={pageWrapRef}>
                 <ActivePage
                     key={activePage}
