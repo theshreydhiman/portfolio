@@ -20,7 +20,7 @@ export default function Navbar({ activePage, onPageChange }) {
                 <div className="nav-links">
                     <span className="nav-quip">Too busy solving actual world problems that I had to vibe code this portfolio</span>
                 </div>
-                <a className="nav-cta mag" href="https://drive.google.com/uc?export=download&id=1oLrHQ1GszIwR1MfkJ6cgR6XfLWaq8tNC" target="_blank" rel="noopener noreferrer"><span>Download CV</span></a>
+                <a className="nav-cta mag" href="https://drive.google.com/uc?export=download&id=1NQPf3q4B9rZUmME8TIGRjkKD-O-TEUl9" target="_blank" rel="noopener noreferrer"><span>Download CV</span></a>
                 <button
                     className={`nav-hamburger${menuOpen ? ' open' : ''}`}
                     onClick={() => setMenuOpen(v => !v)}

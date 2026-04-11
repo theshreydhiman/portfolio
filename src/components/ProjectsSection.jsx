@@ -5,7 +5,7 @@ import Footer from './Footer'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const PROJECTS = [
+const WORK_PROJECTS = [
     {
         num: '01',
         tag: '↳ Enterprise Platform',
@@ -33,6 +33,65 @@ const PROJECTS = [
         ],
         stack: ['Node.js', 'MySQL', 'AWS Lambda', 'Redis', 'Bookshelf.js'],
     },
+    {
+        num: '03',
+        tag: '↳ Integration Platform',
+        title: 'Dapt Tech',
+        desc: 'Cross-platform integration engine bridging HubSpot and JobTread — automating CRM-to-project-management data sync so humans can stop copy-pasting between tabs like it\'s 2009.',
+        quip: '"Two platforms that were never meant to talk. I made them finish each other\'s API calls."',
+        metrics: [
+            { v: 'Real-time', l: 'Data Sync' },
+            { v: '2', l: 'Platforms Bridged' },
+            { v: '0', l: 'Manual Steps' },
+        ],
+        stack: ['Node.js', 'Express', 'HubSpot API', 'JobTread API', 'MySQL'],
+    },
+    {
+        num: '04',
+        tag: '↳ Event-Driven Systems',
+        title: 'Metal Mandi (Attero)',
+        desc: 'High-volume operational backbone for large-scale metal trading. Event-driven architecture with Lambda + SQS for async processing, fault-tolerant retry patterns, and centralized logging that actually tells you what went wrong.',
+        quip: '"Handling more metal than Tony Stark — and with better uptime."',
+        metrics: [
+            { v: 'Lambda', l: 'Event-Driven' },
+            { v: 'SQS', l: 'Async Queues' },
+            { v: 'High', l: 'Volume Txns' },
+        ],
+        stack: ['Node.js', 'AWS Lambda', 'SQS', 'MySQL', 'Express'],
+    },
+]
+
+const PERSONAL_PROJECTS = [
+    {
+        num: '01',
+        tag: '↳ AI & Automation',
+        title: 'Super Agent',
+        desc: 'AI-powered multi-agent system for automated GitHub issue resolution. Worker agents analyze issues and generate fixes, while reviewer agents validate PRs before delivery.',
+        quip: '"It writes the PRs so I don\'t have to. Sometimes better than me."',
+        metrics: [
+            { v: 'Multi', l: 'LLM Support' },
+            { v: '100%', l: 'Automated' },
+            { v: 'Live', l: 'Socket.io' },
+        ],
+        stack: ['Node.js', 'React', 'TypeScript', 'Express', 'Socket.io', 'MySQL'],
+        personal: true,
+        link: 'https://agent.shreydhiman.com',
+    },
+    {
+        num: '02',
+        tag: '↳ Performance Tools',
+        title: 'Keylab',
+        desc: 'High-performance typing practice platform built for speed and accuracy. Features real-time WPM tracking and detailed analytics for typing enthusiasts.',
+        quip: '"Real-time analytics for people who type faster than they think."',
+        metrics: [
+            { v: 'Vite', l: 'Ultra Fast' },
+            { v: 'Real-time', l: 'WPM Stats' },
+            { v: 'Secure', l: 'JWT Auth' },
+        ],
+        stack: ['React', 'TypeScript', 'Node.js', 'Express', 'SQLite', 'Vite'],
+        personal: true,
+        link: 'https://keylab.shreydhiman.com',
+    },
 ]
 
 const ACHIEVEMENTS = [
@@ -40,6 +99,8 @@ const ACHIEVEMENTS = [
     { icon: '⭐', title: '"Emerging Star" Award', sub: 'Outstanding performance, technical expertise & growth', quip: '"Emerging. As if I wasn\'t already here."' },
     { icon: '🥈', title: 'Hackathon Runner-Up', sub: 'Org-wide competition against top internal talent', quip: '"1st Runner-Up. Silver not Gold. Batman would\'ve won."' },
     { icon: '🙏', title: 'Multiple "Thank You" Incentives', sub: 'Consistent high performance & team support', quip: '"They paid me extra to keep doing what I was already doing. Fair enough."' },
+    { icon: '🦇', title: '"Outstanding Newcomer"', sub: 'CrownStack — exceptional performance & quick impact', quip: '"Day one energy, but make it permanent."' },
+    { icon: '📝', title: '"Best Content" Award', sub: 'CrownStack — high-quality technical contributions & docs', quip: '"Apparently writing good documentation is a superpower. Noted."' },
 ]
 
 export default function ProjectsSection() {
@@ -111,8 +172,9 @@ export default function ProjectsSection() {
                 <div className="section-title-big gsap-reveal">Problems Solved.<br />Systems Shipped.</div>
                 <div className="section-sub gsap-reveal">(Some more dramatically than others.)</div>
                 <div className="proj-grid">
-                    {PROJECTS.map((proj, i) => (
-                        <div className="proj-card tilt gsap-reveal" data-num={proj.num} key={i}>
+                    {WORK_PROJECTS.map((proj, i) => (
+                        <div className={`proj-card tilt gsap-reveal${proj.personal ? ' proj-card--personal' : ''}`} data-num={proj.num} key={i}>
+                            {proj.personal && <div className="proj-badge">Personal Project</div>}
                             <div className="proj-tag">{proj.tag}</div>
                             <h3>{proj.title}</h3>
                             <p>{proj.desc}</p>
@@ -128,9 +190,14 @@ export default function ProjectsSection() {
                             <div className="stack-tags">
                                 {proj.stack.map((s, j) => <div className="stack-tag" key={j}>{s}</div>)}
                             </div>
+                            {proj.link && (
+                                <a className="proj-visit mag" href={proj.link} target="_blank" rel="noopener noreferrer">
+                                    <span>Visit Live →</span>
+                                </a>
+                            )}
                         </div>
                     ))}
-                    <div className="proj-card proj-card--loading gsap-reveal" data-num="03">
+                    <div className="proj-card proj-card--loading gsap-reveal" data-num="05">
                         <div className="proj-tag">↳ Classified</div>
                         <h3 className="proj-loading-title">Next Case File</h3>
                         <div className="proj-loading-bars">
@@ -145,6 +212,39 @@ export default function ProjectsSection() {
                             <span className="proj-loading-label">Decrypting</span>
                         </div>
                     </div>
+                </div>
+
+                <div className="gold-line" style={{ margin: '60px 0' }}></div>
+
+                <div className="section-eyebrow gsap-reveal">The Sandbox</div>
+                <div className="section-title-big gsap-reveal">Personal Projects.<br />(Where I break things on purpose.)</div>
+                <div className="section-sub gsap-reveal">(Because building products is fun.)</div>
+                <div className="proj-grid">
+                    {PERSONAL_PROJECTS.map((proj, i) => (
+                        <div className={`proj-card tilt gsap-reveal${proj.personal ? ' proj-card--personal' : ''}`} data-num={proj.num} key={i}>
+                            {proj.personal && <div className="proj-badge">Personal Project</div>}
+                            <div className="proj-tag">{proj.tag}</div>
+                            <h3>{proj.title}</h3>
+                            <p>{proj.desc}</p>
+                            <div className="proj-quip">{proj.quip}</div>
+                            <div className="proj-metrics">
+                                {proj.metrics.map((m, j) => (
+                                    <div className="pm" key={j}>
+                                        <div className="v">{m.v}</div>
+                                        <div className="l">{m.l}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="stack-tags">
+                                {proj.stack.map((s, j) => <div className="stack-tag" key={j}>{s}</div>)}
+                            </div>
+                            {proj.link && (
+                                <a className="proj-visit mag" href={proj.link} target="_blank" rel="noopener noreferrer">
+                                    <span>Visit Live →</span>
+                                </a>
+                            )}
+                        </div>
+                    ))}
                 </div>
 
                 <div className="gold-line" style={{ margin: '60px 0' }}></div>
