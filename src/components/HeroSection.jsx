@@ -18,7 +18,7 @@ const STATS = [
     { count: 2, suffix: '×', label: 'VP-awarded' },
 ]
 
-const CV_URL = 'https://drive.google.com/uc?export=download&id=1oLrHQ1GszIwR1MfkJ6cgR6XfLWaq8tNC'
+const CV_URL = 'https://drive.google.com/uc?export=download&id=1NQPf3q4B9rZUmME8TIGRjkKD-O-TEUl9'
 
 export default function HeroSection({ onViewWork }) {
     const sectionRef = useRef(null)

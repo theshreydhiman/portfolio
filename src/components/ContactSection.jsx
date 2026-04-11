@@ -9,6 +9,7 @@ const CONTACT_LINKS = [
     { icon: '📧', value: 'shreyd4@gmail.com' },
     { icon: '🔗', value: 'linkedin.com/in/theshreydhiman', link: "https://linkedin.com/in/theshreydhiman" },
     { icon: '🐙', value: 'github.com/theshreydhiman', link: "https://github.com/theshreydhiman" },
+    { icon: '🧩', value: 'leetcode.com/theshreydhiman', link: "https://leetcode.com/theshreydhiman" },
     { icon: '📱', value: '+91-9582636882' },
 ]
 
